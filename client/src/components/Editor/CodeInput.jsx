@@ -71,20 +71,20 @@ const CodeInput = ({ onSubmit, isGenerating }) => {
   };
 
   return (
-    <div className="w-1/2 flex flex-col border-r border-slate-800 bg-slate-900/50">
-      <div className="p-4 border-b border-slate-800 flex flex-col gap-3 shrink-0">
-        <div className="flex items-center gap-3">
+    <div className="w-1/2 flex flex-col border-r border-zinc-800 bg-zinc-950">
+      <div className="p-4 border-b border-zinc-800 flex flex-col gap-4 shrink-0">
+        <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Project Title..."
+            placeholder="Project Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="flex-1 bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-slate-200 placeholder-slate-500"
+            className="flex-1 bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs focus:outline-none focus:border-zinc-500 transition-colors text-zinc-100 placeholder-zinc-600 font-medium"
           />
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 text-slate-200"
+            className="bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs focus:outline-none focus:border-zinc-500 text-zinc-100 font-medium"
           >
             <option value="javascript">JavaScript</option>
             <option value="typescript">TypeScript</option>
@@ -113,8 +113,8 @@ const CodeInput = ({ onSubmit, isGenerating }) => {
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium uppercase tracking-wider">
-              <Code2 className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+              <Code2 className="w-3.5 h-3.5" />
               <span>Source Code</span>
             </div>
             
@@ -131,15 +131,15 @@ const CodeInput = ({ onSubmit, isGenerating }) => {
               />
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700 transition-colors"
+                className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-1 border border-zinc-800 transition-colors"
                 title="Upload a folder to give the AI project context"
               >
-                <FolderUp className="w-3.5 h-3.5" />
-                {isReadingFiles ? 'Reading...' : 'Add Context Folder'}
+                <FolderUp className="w-3 h-3" />
+                {isReadingFiles ? 'Reading...' : 'Context'}
               </button>
               {contextFiles.length > 0 && (
-                <span className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">
-                  {contextFiles.length} files loaded
+                <span className="text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 border border-zinc-700">
+                  {contextFiles.length} files
                 </span>
               )}
             </div>
@@ -148,17 +148,17 @@ const CodeInput = ({ onSubmit, isGenerating }) => {
           <button
             onClick={handleSubmit}
             disabled={isGenerating || isReadingFiles}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-zinc-100 hover:bg-white disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-zinc-900 px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors"
           >
             {isGenerating ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                <span>Generating...</span>
+                <div className="w-3.5 h-3.5 border-2 border-zinc-900/20 border-t-zinc-900 rounded-full animate-spin" />
+                <span>Working</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4" />
-                <span>Generate Script</span>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Generate</span>
               </>
             )}
           </button>
