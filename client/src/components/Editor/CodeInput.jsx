@@ -87,9 +87,28 @@ const CodeInput = ({ onSubmit, isGenerating }) => {
             className="bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 text-slate-200"
           >
             <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
             <option value="python">Python</option>
             <option value="java">Java</option>
             <option value="cpp">C++</option>
+            <option value="c">C</option>
+            <option value="csharp">C#</option>
+            <option value="go">Go</option>
+            <option value="rust">Rust</option>
+            <option value="ruby">Ruby</option>
+            <option value="php">PHP</option>
+            <option value="swift">Swift</option>
+            <option value="kotlin">Kotlin</option>
+            <option value="dart">Dart</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="scss">SCSS</option>
+            <option value="json">JSON</option>
+            <option value="xml">XML</option>
+            <option value="yaml">YAML</option>
+            <option value="sql">SQL</option>
+            <option value="bash">Bash / Shell</option>
+            <option value="markdown">Markdown</option>
           </select>
         </div>
         <div className="flex items-center justify-between">
