@@ -14,6 +14,10 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  contextFiles: [{
+    path: { type: String },
+    content: { type: String }
+  }],
   generatedScript: [{
     timestamp: { type: String },
     spokenText: { type: String },

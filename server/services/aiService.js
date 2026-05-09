@@ -1,6 +1,6 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-exports.generateVideoScript = async (rawCode, language) => {
+exports.generateVideoScript = async (rawCode, language, contextFiles = []) => {
   if (!process.env.AI_API_KEY) {
     throw new Error('AI_API_KEY is not configured in the environment variables.');
   }
@@ -8,10 +8,19 @@ exports.generateVideoScript = async (rawCode, language) => {
   const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
+  let contextString = "";
+  if (contextFiles && contextFiles.length > 0) {
+    contextString = "Here is the surrounding project context to help you understand the dependencies and structure:\n\n";
+    contextFiles.forEach(file => {
+      contextString += `--- ${file.path} ---\n${file.content}\n\n`;
+    });
+  }
+
   const prompt = `
 You are an expert developer educator. I am going to provide you with a ${language} code snippet. 
 Your task is to analyze the logical flow of the code and break it down into teaching segments for a video tutorial.
 
+${contextString}
 Code:
 \`\`\`${language}
 ${rawCode}

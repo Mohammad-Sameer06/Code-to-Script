@@ -3,7 +3,7 @@ const { generateVideoScript } = require('../services/aiService');
 
 exports.createProject = async (req, res) => {
   try {
-    const { title, language, rawCode } = req.body;
+    const { title, language, rawCode, contextFiles = [] } = req.body;
 
     // Basic validation
     if (!title || !language || !rawCode) {
@@ -15,13 +15,14 @@ exports.createProject = async (req, res) => {
     }
 
     // Call the AI Service to generate the script
-    const generatedScript = await generateVideoScript(rawCode, language);
+    const generatedScript = await generateVideoScript(rawCode, language, contextFiles);
 
     // Save to DB
     const newProject = new Project({
       title,
       language,
       rawCode,
+      contextFiles,
       generatedScript
     });
 

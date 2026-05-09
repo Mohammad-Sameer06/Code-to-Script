@@ -1,18 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, Code2 } from 'lucide-react';
+import { Play, Code2, FolderUp } from 'lucide-react';
+
+const IGNORED_DIRS = ['node_modules', '.git', '.next', 'dist', 'build', '.vscode', '.idea'];
+const IGNORED_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.mp4', '.pdf', '.zip', '.tar', '.gz', '.svg', '.ico'];
 
 const CodeInput = ({ onSubmit, isGenerating }) => {
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState('// Paste your code here\n\nfunction helloWorld() {\n  console.log("Hello");\n}');
+  const [contextFiles, setContextFiles] = useState([]);
+  const [isReadingFiles, setIsReadingFiles] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleSubmit = () => {
     if (!title.trim() || !code.trim()) {
       alert('Title and code are required');
       return;
     }
-    onSubmit({ title, language, rawCode: code });
+    onSubmit({ title, language, rawCode: code, contextFiles });
+  };
+
+  const handleFolderUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files || files.length === 0) return;
+
+    setIsReadingFiles(true);
+    setContextFiles([]); // Reset previous
+
+    const validFiles = files.filter(file => {
+      // Filter out ignored directories
+      const pathParts = file.webkitRelativePath.split('/');
+      if (pathParts.some(part => IGNORED_DIRS.includes(part))) {
+        return false;
+      }
+      
+      // Filter out ignored extensions
+      const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      if (IGNORED_EXTS.includes(ext)) {
+        return false;
+      }
+
+      // Filter out files that are too large (e.g., > 1MB)
+      if (file.size > 1024 * 1024) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const readPromises = validFiles.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve({
+            path: file.webkitRelativePath,
+            content: event.target.result
+          });
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsText(file);
+      });
+    });
+
+    const results = await Promise.all(readPromises);
+    const successfulReads = results.filter(Boolean);
+    
+    setContextFiles(successfulReads);
+    setIsReadingFiles(false);
   };
 
   return (
@@ -38,13 +93,42 @@ const CodeInput = ({ onSubmit, isGenerating }) => {
           </select>
         </div>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-400 text-xs font-medium uppercase tracking-wider">
-            <Code2 className="w-4 h-4" />
-            <span>Source Code</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium uppercase tracking-wider">
+              <Code2 className="w-4 h-4" />
+              <span>Source Code</span>
+            </div>
+            
+            {/* Folder Context UI */}
+            <div className="flex items-center gap-2">
+              <input 
+                type="file" 
+                webkitdirectory="true" 
+                directory="true" 
+                multiple 
+                ref={fileInputRef} 
+                onChange={handleFolderUpload} 
+                className="hidden" 
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700 transition-colors"
+                title="Upload a folder to give the AI project context"
+              >
+                <FolderUp className="w-3.5 h-3.5" />
+                {isReadingFiles ? 'Reading...' : 'Add Context Folder'}
+              </button>
+              {contextFiles.length > 0 && (
+                <span className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                  {contextFiles.length} files loaded
+                </span>
+              )}
+            </div>
           </div>
+          
           <button
             onClick={handleSubmit}
-            disabled={isGenerating}
+            disabled={isGenerating || isReadingFiles}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
           >
             {isGenerating ? (
